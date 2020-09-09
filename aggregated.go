@@ -8,6 +8,7 @@ import (
 	"github.com/kpango/iface-migration/old3"
 )
 
+// 新規インターフェースは適切なもののみを
 type Aggregated interface {
 	Necessary1()
 	Necessary2()
@@ -20,6 +21,7 @@ type aggregated struct {
 	old3 old3.Old3
 }
 
+// これはコンパイル時にチェックされます
 var _ Aggregated = (*aggregated)(nil)
 
 func New() (Aggregated, error) {
@@ -29,6 +31,7 @@ func New() (Aggregated, error) {
 		old3.New(),
 	}
 
+	// まとめるものが多い場合大変だが、テストコードに書くことでより実装をシンプルに保てる
 	var i interface{} = a
 	_, ok := i.(old1.Old1)
 	if ok {
@@ -58,7 +61,7 @@ func (a aggregated) Necessary3() {
 	a.old3.Necessary3()
 }
 
-
+// コメントアウトすればーエラーではなくなる
 func (a aggregated) Unnecessary1() {
 	a.old1.Unnecessary1()
 }
