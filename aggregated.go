@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/kpango/iface-migration/old1"
 	"github.com/kpango/iface-migration/old2"
 	"github.com/kpango/iface-migration/old3"
@@ -18,11 +20,7 @@ type aggregated struct {
 	old3 old3.Old3
 }
 
-type WithDuplicated interface{
-	old1.Old1
-	old2.Old2
-	old3.Old3
-}
+var _ Aggregated = (*aggregated)(nil)
 
 func New() (Aggregated, error) {
 	a := &aggregated{
@@ -31,9 +29,20 @@ func New() (Aggregated, error) {
 		old3.New(),
 	}
 
-	if _, ok :=(interface{a}).(WithDuplicated){
+	var i interface{} = a
+	_, ok := i.(old1.Old1)
+	if ok {
 		return nil, errors.New("err unneccesary method exists")
 	}
+	_, ok = i.(old2.Old2)
+	if ok {
+		return nil, errors.New("err unneccesary method exists")
+	}
+	_, ok = i.(old3.Old3)
+	if ok {
+		return nil, errors.New("err unneccesary method exists")
+	}
+
 	return a, nil
 }
 
@@ -47,4 +56,9 @@ func (a aggregated) Necessary2() {
 
 func (a aggregated) Necessary3() {
 	a.old3.Necessary3()
+}
+
+
+func (a aggregated) Unnecessary1() {
+	a.old1.Unnecessary1()
 }
