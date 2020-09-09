@@ -18,6 +18,12 @@ type aggregated struct {
 	old3 old3.Old3
 }
 
+type WithDuplicated interface{
+	old1.Old1
+	old2.Old2
+	old3.Old3
+}
+
 func New() (Aggregated, error) {
 	a := &aggregated{
 		old1.New(),
@@ -25,16 +31,9 @@ func New() (Aggregated, error) {
 		old3.New(),
 	}
 
-	if _, ok :=interface{a}.(old1.Old1){
+	if _, ok :=(interface{a}).(WithDuplicated){
 		return nil, errors.New("err unneccesary method exists")
 	}
-	if _, ok :=interface{a}.(old2.Old2){
-		return nil, errors.New("err unneccesary method exists")
-	}
-	if _, ok :=interface{a}.(old3.Old3){
-		return nil, errors.New("err unneccesary method exists")
-	}
-
 	return a, nil
 }
 
